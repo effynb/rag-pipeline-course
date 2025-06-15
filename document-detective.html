@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Interactive Sections</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Theming */
+        :root[data-theme="dark"] {
+            --bg-start: #0a0e27;
+            --bg-end: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --card-border: rgba(148, 163, 184, 0.1);
+            --border-color: rgba(148, 163, 184, 0.1);
+            --primary-start: #3b82f6;
+            --primary-end: #2563eb;
+            --secondary-start: #a855f7;
+            --secondary-end: #8b5cf6;
+            --accent-start: #10b981;
+            --accent-end: #059669;
+            --text-primary: #e4e4e7;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --glow-1: rgba(59, 130, 246, 0.15);
+            --glow-2: rgba(168, 85, 247, 0.15);
+            --toggle-bg: rgba(15, 23, 42, 0.8);
+            --hover-bg: rgba(51, 65, 85, 0.5);
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-focus-bg: rgba(30, 41, 59, 0.8);
+            --focus-ring: rgba(59, 130, 246, 0.2);
+            --spinner-track: rgba(148, 163, 184, 0.2);
+            --spinner-color: #3b82f6;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --success-border: rgba(16, 185, 129, 0.3);
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --error-border: rgba(239, 68, 68, 0.3);
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --warning-border: rgba(245, 158, 11, 0.3);
+        }
+
+        :root[data-theme="light"] {
+            --bg-start: #f8fafc;
+            --bg-end: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(226, 232, 240, 0.8);
+            --border-color: rgba(226, 232, 240, 0.8);
+            --primary-start: #2563eb;
+            --primary-end: #1d4ed8;
+            --secondary-start: #7c3aed;
+            --secondary-end: #6d28d9;
+            --accent-start: #059669;
+            --accent-end: #047857;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --glow-1: rgba(37, 99, 235, 0.1);
+            --glow-2: rgba(124, 58, 237, 0.1);
+            --toggle-bg: rgba(241, 245, 249, 0.8);
+            --hover-bg: rgba(226, 232, 240, 0.5);
+            --input-bg: rgba(248, 250, 252, 0.6);
+            --input-focus-bg: rgba(255, 255, 255, 0.9);
+            --focus-ring: rgba(37, 99, 235, 0.2);
+            --spinner-track: rgba(148, 163, 184, 0.3);
+            --spinner-color: #2563eb;
+            --success-bg: rgba(5, 150, 105, 0.1);
+            --success-border: rgba(5, 150, 105, 0.3);
+            --error-bg: rgba(220, 38, 38, 0.1);
+            --error-border: rgba(220, 38, 38, 0.3);
+            --warning-bg: rgba(217, 119, 6, 0.1);
+            --warning-border: rgba(217, 119, 6, 0.3);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            padding: 8px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        /* Main Interactive Simulator */
+        .interactive-simulator {
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                0 0 100px rgba(59, 130, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .interactive-simulator::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, var(--glow-1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, var(--glow-2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .interactive-simulator > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Section Header */
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .section-title i {
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--secondary-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-start), var(--secondary-end), var(--primary-start));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Primary Button */
+        .btn-primary {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+            transform: translateY(-1px);
+        }
+
+        /* Toggle Group */
+        .toggle-group {
+            display: flex;
+            background: var(--toggle-bg);
+            border-radius: 12px;
+            padding: 6px;
+            gap: 4px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .toggle-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .toggle-btn:hover {
+            color: var(--text-primary);
+            background: var(--hover-bg);
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Document Detective Styles */
+        .match-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .match-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .match-item span {
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .match-item span::before {
+            content: '\f15b';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--text-muted);
+        }
+
+        .match-item select {
+            padding: 10px 16px;
+            background: var(--input-bg);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .match-item select:focus {
+            outline: none;
+            border-color: var(--primary-start);
+            box-shadow: 0 0 0 4px var(--focus-ring);
+        }
+
+        /* Chunking Controls */
+        .chunk-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chunk-size-control {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chunk-size-control label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .chunk-size-control input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--toggle-bg);
+            outline: none;
+            border-radius: 3px;
+            -webkit-appearance: none;
+        }
+
+        .chunk-size-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .chunk-size-control input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .chunk-size-control span {
+            font-weight: 600;
+            color: var(--primary-start);
+            text-align: center;
+            padding: 8px;
+            background: var(--card-bg);
+            border-radius: 8px;
+        }
+
+        /* Visualization */
+        .chunk-viz-item {
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .chunk-viz-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .chunk-viz-item strong {
+            color: var(--primary-start);
+        }
+
+        .token-count {
+            background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .overlap-viz {
+            background: linear-gradient(135deg, var(--secondary-start) 0%, var(--secondary-end) 100%);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .semantic-1 { border-left: 4px solid var(--primary-start); }
+        .semantic-2 { border-left: 4px solid var(--secondary-start); }
+        .semantic-3 { border-left: 4px solid var(--accent-start); }
+
+        /* Feedback and Score */
+        .game-feedback {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .game-feedback.info {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: var(--text-primary);
+        }
+
+        .game-feedback.correct {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--text-primary);
+        }
+
+        .game-feedback.incorrect {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--text-primary);
+        }
+
+        .game-feedback::before {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+        }
+
+        .game-feedback.info::before { content: '\f05a'; }
+        .game-feedback.correct::before { content: '\f00c'; }
+        .game-feedback.incorrect::before { content: '\f00d'; }
+
+        .score-display {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .score-display .score-text {
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--secondary-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Loading States */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: inherit;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--spinner-track);
+            border-top-color: var(--spinner-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Control Buttons */
+        .interactive-controls {
+            display: flex;
+            gap: 16px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-30px, -30px) rotate(180deg); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.6;
+                transform: scale(1.02);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .interactive-simulator {
+                padding: 24px;
+                border-radius: 16px;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .toggle-group {
+                flex-direction: column;
+            }
+
+            .chunk-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .interactive-controls {
+                flex-direction: column;
+            }
+
+            .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 10px;
+            }
+
+            .interactive-simulator {
+                padding: 16px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .match-item {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .match-item select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="theme-icon"></i>
+    </div>
+
+    <div class="container">
+        <!-- Document Detective Section -->
+        <div class="interactive-simulator">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-search"></i>
+                    <span class="gradient-text">Document Detective</span>
+                </h2>
+                <p class="section-description">
+                    Master the art of document analysis by matching each document type to its most appropriate parsing tool. 
+                    Each tool has unique strengths for different content structures and formats.
+                </p>
+            </div>
+
+            <div class="glass-card">
+                <div id="document-matching-game">
+                    <!-- Game items will be loaded by JS -->
+                </div>
+                
+                <div class="interactive-controls">
+                    <button class="btn-primary" id="check-ingestion-answers">
+                        <i class="fas fa-check"></i>
+                        Check Answers
+                    </button>
+                    <button class="btn-secondary" id="reset-ingestion-game">
+                        <i class="fas fa-redo"></i>
+                        Reset Game
+                    </button>
+                </div>
+                
+                <div id="ingestion-feedback" class="game-feedback info">
+                    Select the most appropriate parsing tool for each document type to begin your analysis.
+                </div>
+                
+                <div id="ingestion-score" class="score-display">
+                    <span class="score-text">Score: 0 / 0</span>
+                </div>
+
+                <div class="loading-overlay">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chunk Master Strategies Section -->
+        <div class="interactive-simulator">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-cut"></i>
+                    <span class="gradient-text">Chunk Master Strategies</span>
+                </h2>
+                <p class="section-description">
+                    Explore advanced text chunking methodologies. Experiment with different strategies, adjust parameters, 
+                    and observe how your choices impact retrieval quality and token efficiency.
+                </p>
+            </div>
+
+            <div class="glass-card">
+                <div class="toggle-group">
+                    <button class="toggle-btn strategy-btn active" data-strategy="word">
+                        <i class="fas fa-file-word"></i>
+                        Fixed Word Count
+                    </button>
+                    <button class="toggle-btn strategy-btn" data-strategy="token">
+                        <i class="fas fa-coins"></i>
+                        Fixed Token Count
+                    </button>
+                    <button class="toggle-btn strategy-btn" data-strategy="semantic">
+                        <i class="fas fa-lightbulb"></i>
+                        Semantic Chunking
+                    </button>
+                </div>
+
+                <div class="chunk-controls">
+                    <div class="chunk-size-control">
+                        <label for="chunk-size-slider">
+                            <i class="fas fa-text-width"></i>
+                            <span id="chunk-unit-label">Chunk Size</span>
+                        </label>
+                        <input type="range" id="chunk-size-slider" min="20" max="100" value="50" step="5">
+                        <span id="chunk-size-value">50 words</span>
+                    </div>
+                    <div class="chunk-size-control">
+                        <label for="overlap-slider">
+                            <i class="fas fa-object-ungroup"></i>
+                            Overlap Percentage
+                        </label>
+                        <input type="range" id="overlap-slider" min="0" max="50" value="10" step="5">
+                        <span id="overlap-value">10%</span>
+                    </div>
+                </div>
+
+                <div id="chunking-visualization">
+                    <!-- Visualization will be updated by JS -->
+                </div>
+
+                <div id="chunking-quality" class="score-display">
+                    <span class="score-text">Retrieval Quality: Excellent (85%)</span>
+                </div>
+
+                <div id="chunking-feedback" class="game-feedback info">
+                    Select a chunking strategy and adjust the parameters to see how different approaches affect text segmentation and retrieval quality.
+                </div>
+
+                <div class="loading-overlay">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        function initializeTheme() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // Document Detective Game Data
+        const ingestionQuestions = [
+            {
+                doc: "Company Financial Report (PDF)",
+                correct: "Unstructured.io (document parsing)",
+                options: ["Unstructured.io (document parsing)", "BeautifulSoup (web scraping)", "SQLAlchemy (database)", "Pandas (JSON/tabular data)"],
+                info: "Unstructured.io excels at extracting tables and preserving complex PDF layouts, making it ideal for financial reports with structured data elements."
+            },
+            {
+                doc: "Product Page (HTML)",
+                correct: "BeautifulSoup (web scraping)",
+                options: ["Unstructured.io (document parsing)", "BeautifulSoup (web scraping)", "SQLAlchemy (database)", "Pandas (JSON/tabular data)"],
+                info: "BeautifulSoup is specifically designed for parsing HTML, making it the perfect choice for extracting content from web pages."
+            },
+            {
+                doc: "User Database (SQL)",
+                correct: "SQLAlchemy (database)",
+                options: ["Unstructured.io (document parsing)", "BeautifulSoup (web scraping)", "SQLAlchemy (database)", "Pandas (JSON/tabular data)"],
+                info: "SQLAlchemy provides efficient interfaces to connect with and query structured data from SQL databases."
+            },
+            {
+                doc: "API Response (JSON)",
+                correct: "Pandas (JSON/tabular data)",
+                options: ["Unstructured.io (document parsing)", "BeautifulSoup (web scraping)", "SQLAlchemy (database)", "Pandas (JSON/tabular data)"],
+                info: "Pandas excels at processing structured JSON data, especially when converting it to tabular formats for analysis."
+            },
+            {
+                doc: "Internal Memo (DOCX)",
+                correct: "Unstructured.io (document parsing)",
+                options: ["Unstructured.io (document parsing)", "BeautifulSoup (web scraping)", "SQLAlchemy (database)", "Pandas (JSON/tabular data)"],
+                info: "Unstructured.io handles Word documents effectively, preserving formatting while extracting text, tables, and images."
+            }
+        ];
+
+        let currentScore = 0;
+        let gameScores = {
+            'ingestion': { correct: 0, total: ingestionQuestions.length },
+            'chunking': { correct: 0, total: 100 }
+        };
+
+        // Document Detective Game Functions
+        function initIngestionGame() {
+            const gameArea = document.getElementById('document-matching-game');
+            if (!gameArea) return;
+            
+            gameArea.innerHTML = '';
+            currentScore = 0;
+            gameScores['ingestion'] = { correct: 0, total: ingestionQuestions.length };
+
+            ingestionQuestions.forEach((q, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'match-item';
+                itemDiv.style.animationDelay = `${index * 0.1}s`;
+
+                const docSpan = document.createElement('span');
+                docSpan.textContent = q.doc;
+
+                const select = document.createElement('select');
+                select.setAttribute('data-correct', q.correct);
+                select.setAttribute('data-index', index);
+                select.setAttribute('data-info', q.info);
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = "-- Select Tool --";
+                select.appendChild(defaultOption);
+
+                q.options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.textContent = opt;
+                    select.appendChild(option);
+                });
+
+                select.addEventListener('change', (e) => checkSingleIngestionAnswer(e.target));
+                
+                itemDiv.appendChild(docSpan);
+                itemDiv.appendChild(select);
+                gameArea.appendChild(itemDiv);
+            });
+
+            showFeedback('ingestion-feedback', 'Select the most appropriate parsing tool for each document type to begin your analysis.', 'info');
+            updateScoreDisplay('ingestion-score', 'ingestion', 0, ingestionQuestions.length);
+            document.getElementById('check-ingestion-answers').disabled = false;
+        }
+
+        function checkSingleIngestionAnswer(selectElement) {
+            const chosen = selectElement.value;
+            const correct = selectElement.getAttribute('data-correct');
+            const isCorrect = chosen === correct;
+            
+            selectElement.style.borderColor = isCorrect ? 'var(--accent-start)' : (chosen ? 'var(--error-border)' : 'var(--card-border)');
+            selectElement.style.boxShadow = isCorrect ? '0 0 0 4px rgba(16, 185, 129, 0.2)' : (chosen ? '0 0 0 4px rgba(239, 68, 68, 0.2)' : 'none');
+            
+            // Add visual feedback with animation
+            selectElement.parentElement.style.transform = isCorrect ? 'scale(1.02)' : 'scale(1)';
+            setTimeout(() => {
+                selectElement.parentElement.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function checkAllIngestionAnswers() {
+            showLoading('document-matching-game');
+            
+            setTimeout(() => {
+                const selects = document.querySelectorAll('#document-matching-game select');
+                let correctCount = 0;
+                let allAnswered = true;
+                
+                selects.forEach(select => {
+                    checkSingleIngestionAnswer(select);
+                    if (select.value === select.getAttribute('data-correct')) {
+                        correctCount++;
+                    }
+                    if (!select.value) {
+                        allAnswered = false;
+                    }
+                });
+                
+                gameScores['ingestion'] = { correct: correctCount, total: ingestionQuestions.length };
+                updateScoreDisplay('ingestion-score', 'ingestion');
+                
+                if (!allAnswered) {
+                    showFeedback('ingestion-feedback', 'Please select a tool for all document types to complete the analysis.', 'info');
+                } else if (correctCount === ingestionQuestions.length) {
+                    showFeedback('ingestion-feedback', '<strong>Excellent detective work!</strong> All matches are correct. You have mastered document-tool pairing!', 'correct');
+                    document.getElementById('check-ingestion-answers').disabled = true;
+                } else {
+                    showFeedback('ingestion-feedback', `Good progress! You got ${correctCount} out of ${ingestionQuestions.length} correct. Review the incorrect answers (highlighted in red) and consider the specific strengths of each tool.`, 'incorrect');
+                }
+                
+                hideLoading('document-matching-game');
+            }, 1000);
+        }
+
+        function resetIngestionGame() {
+            showLoading('document-matching-game');
+            setTimeout(() => {
+                initIngestionGame();
+                hideLoading('document-matching-game');
+            }, 500);
+        }
+
+        // Chunking Game Data and Functions
+        const sampleTextWithSEP = "Imagine a world where the tools we use in software testing go beyond simply executing tasks on command—they act as trusted companions, available 24/7, and proactively help us tackle our toughest challenges.[SEP] As testers, we face a cascade of questions daily: Have I tested everything that matters? Did I miss anything critical? Is my testing thorough enough?[SEP] But it doesn't stop there. You may also ask: Am I focusing on the right things? Do I understand the business context? What if I missed a critical bug? With tight deadlines, limited resources, and endless mundane checks, how can I stay on top of it all? These are challenges we grapple with...";
+        
+        const sampleText = sampleTextWithSEP.replace(/\[SEP\]/g, ' ');
+        const words = sampleText.split(/\s+/);
+        const semanticBoundaries = sampleTextWithSEP.split('[SEP]');
+        
+        let currentChunkingStrategy = 'word';
+
+        function initChunkingGame() {
+            const strategyBtns = document.querySelectorAll('.strategy-btn');
+            const sizeSlider = document.getElementById('chunk-size-slider');
+            const overlapSlider = document.getElementById('overlap-slider');
+            
+            if (!strategyBtns.length || !sizeSlider || !overlapSlider) return;
+            
+            strategyBtns.forEach(btn => {
+                btn.removeEventListener('click', handleStrategyChange);
+                btn.addEventListener('click', handleStrategyChange);
+            });
+            
+            sizeSlider.removeEventListener('input', updateChunkingVisualization);
+            overlapSlider.removeEventListener('input', updateChunkingVisualization);
+            sizeSlider.addEventListener('input', updateChunkingVisualization);
+            overlapSlider.addEventListener('input', updateChunkingVisualization);
+            
+            setActiveStrategyButton(currentChunkingStrategy);
+            updateChunkingVisualization();
+        }
+
+        function handleStrategyChange(event) {
+            const newStrategy = event.currentTarget.getAttribute('data-strategy');
+            if (newStrategy === currentChunkingStrategy) return;
+            
+            currentChunkingStrategy = newStrategy;
+            setActiveStrategyButton(newStrategy);
+            
+            const sizeSlider = document.getElementById('chunk-size-slider');
+            const sizeLabel = document.getElementById('chunk-unit-label');
+            const sizeValue = document.getElementById('chunk-size-value');
+            const overlapSlider = document.getElementById('overlap-slider');
+            const overlapValue = document.getElementById('overlap-value');
+            const chunkControls = document.querySelector('.chunk-controls');
+            
+            if (!sizeSlider || !sizeLabel || !sizeValue || !overlapSlider || !overlapValue || !chunkControls) return;
+            
+            chunkControls.style.display = newStrategy === 'semantic' ? 'none' : 'grid';
+            
+            if (newStrategy === 'word') {
+                sizeSlider.min = 20; sizeSlider.max = 100; sizeSlider.value = 50;
+                overlapSlider.max = 50; overlapSlider.value = 10;
+                sizeLabel.textContent = "Chunk Size";
+            } else if (newStrategy === 'token') {
+                sizeSlider.min = 30; sizeSlider.max = 150; sizeSlider.value = 75;
+                overlapSlider.max = 50; overlapSlider.value = 10;
+                sizeLabel.textContent = "Token Count";
+            }
+            
+            updateChunkingVisualization();
+        }
+
+        function setActiveStrategyButton(strategy) {
+            document.querySelectorAll('.strategy-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-strategy') === strategy);
+            });
+        }
+
+        function estimateTokens(text) { 
+            return Math.max(1, Math.round(text.length / 4)); 
+        }
+
+        function updateChunkingVisualization() {
+            const sizeSlider = document.getElementById('chunk-size-slider');
+            const sizeValueEl = document.getElementById('chunk-size-value');
+            const overlapSlider = document.getElementById('overlap-slider');
+            const overlapValueEl = document.getElementById('overlap-value');
+            const vizArea = document.getElementById('chunking-visualization');
+            const qualityScoreEl = document.getElementById('chunking-quality');
+            const feedbackEl = document.getElementById('chunking-feedback');
+            
+            if (!sizeSlider || !sizeValueEl || !overlapSlider || !overlapValueEl || !vizArea || !qualityScoreEl || !feedbackEl) {
+                return;
+            }
+            
+            const chunkSize = parseInt(sizeSlider.value);
+            const overlapPercent = parseInt(overlapSlider.value);
+            
+            vizArea.innerHTML = '';
+            let chunks = [];
+            let feedbackMsg = "";
+            let qualityScore = 0;
+            
+            if (currentChunkingStrategy === 'word') {
+                const unit = "words";
+                sizeValueEl.textContent = `${chunkSize} ${unit}`;
+                overlapValueEl.textContent = `${overlapPercent}%`;
+                
+                const overlapSize = Math.round(chunkSize * (overlapPercent / 100));
+                let startIndex = 0;
+                
+                while (startIndex < words.length) {
+                    const endIndex = Math.min(startIndex + chunkSize, words.length);
+                    const chunkText = words.slice(startIndex, endIndex).join(' ');
+                    const tokens = estimateTokens(chunkText);
+                    
+                    let displayHtml = chunkText;
+                    if (startIndex > 0 && overlapSize > 0) {
+                        const overlapWords = words.slice(Math.max(0, startIndex - overlapSize), startIndex);
+                        const overlapStr = overlapWords.join(' ');
+                        if (chunkText.startsWith(overlapStr)) {
+                            displayHtml = `<span class="overlap-viz">${overlapStr}</span>${chunkText.substring(overlapStr.length)}`;
+                        }
+                    }
+                    
+                    chunks.push({ text: chunkText, display: displayHtml, tokens: tokens });
+                    startIndex += Math.max(1, chunkSize - overlapSize);
+                }
+                
+                if (chunkSize < 40) { 
+                    qualityScore = 50; 
+                    feedbackMsg = "Small chunks might miss context. Consider increasing size or overlap."; 
+                } else if (chunkSize > 80) { 
+                    qualityScore = 65; 
+                    feedbackMsg = "Large chunks might be noisy. Consider semantic chunking for better precision."; 
+                } else { 
+                    qualityScore = 80; 
+                    feedbackMsg = "Good balance for fixed-size word chunking. Overlap helps maintain context."; 
+                }
+                qualityScore += overlapPercent * 0.5;
+                
+            } else if (currentChunkingStrategy === 'token') {
+                const unit = "tokens";
+                sizeValueEl.textContent = `~${chunkSize} ${unit}`;
+                overlapValueEl.textContent = `${overlapPercent}%`;
+                
+                // Simplified token-based chunking simulation
+                let currentPos = 0;
+                while (currentPos < sampleText.length) {
+                    let endPos = currentPos;
+                    let tokenCount = 0;
+                    
+                    while (endPos < sampleText.length && tokenCount < chunkSize) {
+                        endPos++;
+                        tokenCount = estimateTokens(sampleText.substring(currentPos, endPos));
+                    }
+                    
+                    const chunkText = sampleText.substring(currentPos, endPos);
+                    chunks.push({ text: chunkText, display: chunkText, tokens: tokenCount });
+                    
+                    const overlapTokens = Math.round(chunkSize * (overlapPercent / 100));
+                    currentPos += Math.max(1, chunkSize - overlapTokens);
+                    
+                    if (currentPos >= sampleText.length) break;
+                }
+                
+                if (chunkSize < 60) { 
+                    qualityScore = 55; 
+                    feedbackMsg = "Small token chunks risk losing meaning. Increase size or use overlap."; 
+                } else if (chunkSize > 120) { 
+                    qualityScore = 70; 
+                    feedbackMsg = "Larger token chunks are better, but watch context window limits."; 
+                } else { 
+                    qualityScore = 85; 
+                    feedbackMsg = "Good token size balance. Overlap enhances retrieval quality."; 
+                }
+                qualityScore += overlapPercent * 0.5;
+                
+            } else if (currentChunkingStrategy === 'semantic') {
+                sizeValueEl.textContent = 'Adaptive';
+                overlapValueEl.textContent = 'Natural';
+                
+                semanticBoundaries.forEach((text, index) => {
+                    if (text.trim()) {
+                        chunks.push({ 
+                            text: text, 
+                            display: text, 
+                            tokens: estimateTokens(text), 
+                            semanticClass: `semantic-${(index % 3) + 1}` 
+                        });
+                    }
+                });
+                
+                qualityScore = 95;
+                feedbackMsg = "Semantic chunking creates meaning-preserving boundaries, offering the highest retrieval quality for most use cases.";
+            }
+            
+            // Render chunks
+            chunks.forEach((chunk, index) => {
+                const chunkEl = document.createElement('div');
+                chunkEl.className = `chunk-viz-item ${chunk.semanticClass || ''}`;
+                chunkEl.style.animationDelay = `${index * 0.1}s`;
+                chunkEl.innerHTML = `<strong>Chunk ${index + 1}:</strong> ${chunk.display} <span class="token-count">${chunk.tokens} tokens</span>`;
+                vizArea.appendChild(chunkEl);
+            });
+            
+            qualityScore = Math.min(100, Math.max(0, Math.round(qualityScore)));
+            let qualityLabel = qualityScore >= 90 ? "Excellent" : qualityScore >= 70 ? "Good" : qualityScore >= 40 ? "Fair" : "Poor";
+            
+            updateScoreDisplay('chunking-quality', 'chunking', qualityScore, 100);
+            gameScores['chunking'].qualityText = qualityLabel;
+            
+            showFeedback('chunking-feedback', feedbackMsg, qualityScore > 70 ? 'info' : 'incorrect');
+        }
+
+        // Utility Functions
+        function showFeedback(elementId, message, type) {
+            const feedbackEl = document.getElementById(elementId);
+            if (!feedbackEl) return;
+            
+            feedbackEl.innerHTML = message;
+            feedbackEl.className = `game-feedback ${type}`;
+            
+            // Add animation
+            feedbackEl.style.animation = 'none';
+            feedbackEl.offsetHeight; // Trigger reflow
+            feedbackEl.style.animation = 'slideIn 0.3s ease forwards';
+        }
+
+        function updateScoreDisplay(elementId, gameType, correct, total) {
+            const scoreEl = document.getElementById(elementId);
+            if (!scoreEl) return;
+            
+            const currentCorrect = correct !== undefined ? correct : gameScores[gameType].correct;
+            const currentTotal = total !== undefined ? total : gameScores[gameType].total;
+            
+            if (gameType === 'chunking') {
+                const label = gameScores[gameType].qualityText || 'Good';
+                scoreEl.innerHTML = `<span class="score-text">Retrieval Quality: ${label} (${currentCorrect}%)</span>`;
+            } else {
+                scoreEl.innerHTML = `<span class="score-text">Score: ${currentCorrect} / ${currentTotal}</span>`;
+            }
+            
+            // Add pulse animation for score updates
+            scoreEl.style.animation = 'pulse 0.5s ease';
+            setTimeout(() => {
+                scoreEl.style.animation = '';
+            }, 500);
+        }
+
+        function showLoading(containerId) {
+            const container = document.querySelector(`#${containerId}`).closest('.glass-card');
+            const overlay = container.querySelector('.loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+            }
+        }
+
+        function hideLoading(containerId) {
+            const container = document.querySelector(`#${containerId}`).closest('.glass-card');
+            const overlay = container.querySelector('.loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('check-ingestion-answers')?.addEventListener('click', checkAllIngestionAnswers);
+        document.getElementById('reset-ingestion-game')?.addEventListener('click', resetIngestionGame);
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
+            initIngestionGame();
+            initChunkingGame();
+        });
+    </script>
+</body>
+</html>
