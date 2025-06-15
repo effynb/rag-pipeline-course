@@ -1,0 +1,190 @@
+<svg id="rag-overview-svg" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" aria-labelledby="rag-overview-title"
+    role="img" style="cursor: pointer;">
+    <title id="rag-overview-title">Overview of the RAG process</title>
+    <defs>
+        <!-- Drop shadows for components -->
+        <filter id="drop-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="1" dy="1" stdDeviation="1.5" flood-opacity="0.2"></feDropShadow>
+        </filter>
+
+        <!-- Arrow markers -->
+        <marker id="arrowhead-query-in" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+            <polygon points="0 0, 10 4, 0 8" fill="#FBBC05"></polygon>
+        </marker>
+        <marker id="arrowhead-response-out" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+            <polygon points="0 0, 10 4, 0 8" fill="#E91E63"></polygon>
+        </marker>
+        <marker id="arrowhead-knowledge-in" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+            <polygon points="0 0, 10 4, 0 8" fill="#4285F4"></polygon>
+        </marker>
+    </defs>
+
+    <style>
+        #rag-overview-svg .component-label {
+            font-size: 12px;
+            font-weight: 500;
+            fill: #555;
+            transition: fill 0.3s ease, font-weight 0.3s ease;
+        }
+
+        #rag-overview-svg .component-box {
+            transition: stroke 0.3s ease, stroke-width 0.3s ease, filter 0.3s ease;
+        }
+
+        #rag-overview-svg .highlighted .component-box {
+            stroke: var(--uipath-orange, #FF6D00);
+            stroke-width: 3;
+            filter: drop-shadow(0px 0px 8px var(--uipath-orange, #FF6D00));
+        }
+
+        #rag-overview-svg .highlighted .component-label {
+            fill: var(--uipath-blue, #2196F3);
+            font-weight: 700;
+        }
+
+        /* Specific styles for the retrieve component */
+        #rag-overview-svg #knowledge-flow-path {
+            transition: stroke 0.3s ease, filter 0.3s ease;
+        }
+
+        #rag-overview-svg #retrieve-label {
+            transition: fill 0.3s ease, font-weight 0.3s ease;
+        }
+
+        #rag-overview-svg .highlighted #knowledge-flow-path {
+            stroke: #E91E63;
+            filter: drop-shadow(0px 0px 8px #E91E63);
+        }
+
+        #rag-overview-svg .highlighted #retrieve-label {
+            fill: #E91E63;
+            font-weight: 700;
+        }
+
+        #rag-overview-svg .highlighted #arrowhead-knowledge-in polygon {
+            fill: #E91E63;
+        }
+
+        .dark-mode #rag-overview-svg .component-label {
+            fill: var(--dark-text-secondary, #aaa);
+        }
+
+        .dark-mode #rag-overview-svg .highlighted .component-label {
+            fill: var(--uipath-blue, #2196F3);
+        }
+
+        .dark-mode #rag-overview-svg .highlighted #retrieve-label {
+            fill: #E91E63;
+        }
+    </style>
+
+    <!-- Background -->
+    <rect x="0" y="0" width="500" height="300" fill="#fafafa" rx="0"></rect>
+
+    <!-- Title -->
+    <text x="250" y="30" class="component-label" font-size="16" font-weight="600" text-anchor="middle" fill="#333">
+        Retrieval-Augmented Generation (RAG) at a high-level
+    </text>
+
+    <!-- Knowledge Source -->
+    <g id="docs-group" class="highlighted-component" filter="url(#drop-shadow)">
+        <rect class="component-box" x="20" y="60" width="80" height="120" fill="#E3F2FD" stroke="#4285F4"
+            stroke-width="2" rx="6"></rect>
+
+        <!-- Document stack icon -->
+        <g transform="translate(35, 75)">
+            <rect x="0" y="0" width="50" height="60" fill="white" stroke="#4285F4" stroke-width="1" rx="2"></rect>
+            <rect x="-4" y="-4" width="50" height="60" fill="#E3F2FD" stroke="#4285F4" stroke-width="1" rx="2"
+                opacity="0.6"></rect>
+            <rect x="-8" y="-8" width="50" height="60" fill="#E3F2FD" stroke="#4285F4" stroke-width="1" rx="2"
+                opacity="0.3"></rect>
+            <path d="M8 15h35 M8 25h35 M8 35h25 M8 45h30" stroke="#4285F4" stroke-width="1.5" opacity="0.7"></path>
+        </g>
+
+        <text class="component-label" x="60" y="162" text-anchor="middle" font-size="12"
+            font-weight="600">Knowledge</text>
+        <text class="component-label" x="60" y="177" text-anchor="middle" font-size="12" font-weight="600">Source</text>
+    </g>
+
+    <!-- RAG System -->
+    <g id="rag-system-group" class="highlighted-component" filter="url(#drop-shadow)">
+        <rect class="component-box" x="165" y="65" width="170" height="170" rx="8" fill="#F1F8E9" stroke="#34A853"
+            stroke-width="2.5"></rect>
+
+        <!-- Processing icon with retrieval+generation -->
+        <g transform="translate(250, 120)">
+            <!-- Central gear -->
+            <circle r="36" fill="#f8f8f8" stroke="#34A853" stroke-width="1"></circle>
+
+            <!-- Input/output lines -->
+            <line x1="-36" y1="-10" x2="-20" y2="-10" stroke="#34A853" stroke-width="1.5"></line>
+            <line x1="-36" y1="10" x2="-20" y2="10" stroke="#34A853" stroke-width="1.5"></line>
+            <line x1="20" y1="0" x2="36" y2="0" stroke="#34A853" stroke-width="1.5"></line>
+
+            <!-- Gear teeth -->
+            <path
+                d="M0,-25 l3,-8 l4,0 l3,8 l8,-3 l2,3 l-3,8 l8,3 l0,4 l-8,3 l3,8 l-2,3 l-8,-3 l-3,8 l-4,0 l-3,-8 l-8,3 l-2,-3 l3,-8 l-8,-3 l0,-4 l8,-3 l-3,-8 l2,-3 Z"
+                fill="#34A853" fill-opacity="0.7"></path>
+
+            <!-- Central hub -->
+            <circle r="12" fill="#f8f8f8" stroke="#34A853" stroke-width="1"></circle>
+        </g>
+
+        <text x="250" y="180" text-anchor="middle" font-size="28" fill="#34A853" font-weight="bold">RAG</text>
+        <text class="component-label" x="250" y="205" text-anchor="middle" font-size="13">Retrieval
+            +</text>
+        <text class="component-label" x="250" y="223" text-anchor="middle" font-size="13">Generation</text>
+    </g>
+
+    <!-- Query - Move text 7px to the right -->
+    <g id="query-group" class="highlighted-component highlighted" filter="url(#drop-shadow)">
+        <rect class="component-box" x="30" y="210" width="113" height="50" rx="6" fill="#FFF8E1" stroke="#FBBC05"
+            stroke-width="2"></rect>
+
+        <!-- Speech bubble with question mark -->
+        <g transform="translate(55, 235)">
+            <path
+                d="M-10,-10 h15 a7,7 0 0 1 7,7 v6 a7,7 0 0 1 -7,7 h-3 l-4,7 l-4,-7 h-4 a7,7 0 0 1 -7,-7 v-6 a7,7 0 0 1 7,-7 Z"
+                fill="white" stroke="#FBBC05" stroke-width="1"></path>
+            <text x="0" y="3" text-anchor="middle" font-size="12" fill="#FBBC05" font-weight="bold">?</text>
+        </g>
+
+        <!-- Text moved 7px more to the right -->
+        <text class="component-label" x="102" y="237" text-anchor="middle" font-size="13" font-weight="600">User
+            Query</text>
+
+        <!-- Query arrow -->
+        <path d="M85 210 Q 130 175, 165 160" stroke="#FBBC05" stroke-width="2.5" fill="none"
+            marker-end="url(#arrowhead-query-in)" stroke-dasharray="5,3"></path>
+    </g>
+
+    <!-- Response - Icon and text moved 4px more to the right -->
+    <g id="response-group" class="highlighted-component" filter="url(#drop-shadow)">
+        <rect class="component-box" x="380" y="125" width="100" height="50" rx="6" fill="#FCE4EC" stroke="#E91E63"
+            stroke-width="2"></rect>
+
+        <!-- Document icon moved 4px more to the right -->
+        <g transform="translate(399, 150)">
+            <rect x="-12" y="-15" width="24" height="30" fill="white" stroke="#E91E63" stroke-width="1" rx="2"></rect>
+            <path d="M-7,-8 h14 M-7,0 h14 M-7,8 h10" stroke="#E91E63" stroke-width="1.2"></path>
+        </g>
+
+        <text class="component-label" x="444" y="143" text-anchor="middle" font-size="13" font-weight="600">Final</text>
+        <text class="component-label" x="444" y="158" text-anchor="middle" font-size="13"
+            font-weight="600">Answer</text>
+
+        <!-- Response arrow -->
+        <path d="M335 150 Q 355 150, 380 150" stroke="#E91E63" stroke-width="2.5" fill="none"
+            marker-end="url(#arrowhead-response-out)" stroke-dasharray="5,3"></path>
+    </g>
+
+    <!-- Knowledge Flow -->
+    <g id="knowledge-flow-group" class="highlighted-component">
+        <path id="knowledge-flow-path" d="M100 100 Q 135 110, 165 120" stroke="#4285F4" stroke-width="2.5" fill="none"
+            marker-end="url(#arrowhead-knowledge-in)"></path>
+
+        <!-- Text only -->
+        <text id="retrieve-label" class="component-label" x="140" y="98" text-anchor="middle" font-size="11"
+            font-weight="600" fill="#4285F4">Retrieve</text>
+    </g>
+</svg>
