@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive RAG Learning Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Theming */
+        :root[data-theme="dark"] {
+            --bg-start: #0a0e27;
+            --bg-end: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --card-border: rgba(148, 163, 184, 0.1);
+            --border-color: rgba(148, 163, 184, 0.1);
+            --primary-start: #3b82f6;
+            --primary-end: #2563eb;
+            --secondary-start: #a855f7;
+            --secondary-end: #8b5cf6;
+            --accent-start: #10b981;
+            --accent-end: #059669;
+            --text-primary: #e4e4e7;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --glow-1: rgba(59, 130, 246, 0.15);
+            --glow-2: rgba(168, 85, 247, 0.15);
+            --toggle-bg: rgba(15, 23, 42, 0.8);
+            --hover-bg: rgba(51, 65, 85, 0.5);
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-focus-bg: rgba(30, 41, 59, 0.8);
+            --focus-ring: rgba(59, 130, 246, 0.2);
+            --spinner-track: rgba(148, 163, 184, 0.2);
+            --spinner-color: #3b82f6;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --success-border: rgba(16, 185, 129, 0.3);
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --error-border: rgba(239, 68, 68, 0.3);
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --warning-border: rgba(245, 158, 11, 0.3);
+            --svg-bg: rgba(250, 250, 250, 0.05);
+        }
+
+        :root[data-theme="light"] {
+            --bg-start: #f8fafc;
+            --bg-end: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(226, 232, 240, 0.8);
+            --border-color: rgba(226, 232, 240, 0.8);
+            --primary-start: #2563eb;
+            --primary-end: #1d4ed8;
+            --secondary-start: #7c3aed;
+            --secondary-end: #6d28d9;
+            --accent-start: #059669;
+            --accent-end: #047857;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --glow-1: rgba(37, 99, 235, 0.1);
+            --glow-2: rgba(124, 58, 237, 0.1);
+            --toggle-bg: rgba(241, 245, 249, 0.8);
+            --hover-bg: rgba(226, 232, 240, 0.5);
+            --input-bg: rgba(248, 250, 252, 0.6);
+            --input-focus-bg: rgba(255, 255, 255, 0.9);
+            --focus-ring: rgba(37, 99, 235, 0.2);
+            --spinner-track: rgba(148, 163, 184, 0.3);
+            --spinner-color: #2563eb;
+            --success-bg: rgba(5, 150, 105, 0.1);
+            --success-border: rgba(5, 150, 105, 0.3);
+            --error-bg: rgba(220, 38, 38, 0.1);
+            --error-border: rgba(220, 38, 38, 0.3);
+            --warning-bg: rgba(217, 119, 6, 0.1);
+            --warning-border: rgba(217, 119, 6, 0.3);
+            --svg-bg: rgba(250, 250, 250, 0.8);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            padding: 8px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        /* Main Interactive Simulator */
+        .interactive-simulator {
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                0 0 100px rgba(59, 130, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .interactive-simulator::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, var(--glow-1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, var(--glow-2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .interactive-simulator > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Section Header */
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .section-title i {
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--secondary-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-start), var(--secondary-end), var(--primary-start));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        /* Primary Button */
+        .btn-primary {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+            transform: translateY(-1px);
+        }
+
+        /* Feedback and Score */
+        .game-feedback {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 500;
+            position: relative;
+            min-height: 120px;
+        }
+
+        .game-feedback.info {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: var(--text-primary);
+        }
+
+        .game-feedback.correct {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--text-primary);
+        }
+
+        .game-feedback.incorrect {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--text-primary);
+        }
+
+        .game-feedback::before {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+        }
+
+        .game-feedback.info::before { content: '\f05a'; color: var(--warning-border); }
+        .game-feedback.correct::before { content: '\f00c'; color: var(--success-border); }
+        .game-feedback.incorrect::before { content: '\f00d'; color: var(--error-border); }
+
+        .feedback-content {
+            padding-left: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .feedback-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .feedback-section:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .feedback-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
+
+        .feedback-text {
+            font-weight: 400;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Control Buttons */
+        .interactive-controls {
+            display: flex;
+            gap: 16px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Visualization */
+        .section-visualization {
+            margin-bottom: 24px;
+        }
+
+        .visualization-caption {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            padding: 12px;
+            background: var(--input-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* RAG SVG Specific Styles */
+        #rag-overview-svg {
+            background: var(--svg-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #rag-overview-svg:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        #rag-overview-svg .component-label {
+            font-size: 12px;
+            font-weight: 500;
+            fill: var(--text-secondary);
+            transition: fill 0.3s ease, font-weight 0.3s ease;
+        }
+
+        #rag-overview-svg .component-box {
+            transition: all 0.3s ease;
+        }
+
+        #rag-overview-svg .highlighted .component-box {
+            stroke-width: 3;
+            filter: drop-shadow(0px 0px 12px currentColor);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        #rag-overview-svg .highlighted .component-label {
+            fill: var(--primary-start);
+            font-weight: 700;
+        }
+
+        #rag-overview-svg #knowledge-flow-path {
+            transition: stroke 0.3s ease, filter 0.3s ease;
+        }
+
+        #rag-overview-svg .highlighted #knowledge-flow-path {
+            stroke: var(--secondary-start);
+            filter: drop-shadow(0px 0px 8px var(--secondary-start));
+        }
+
+        #rag-overview-svg .highlighted #retrieve-label {
+            fill: var(--secondary-start);
+            font-weight: 700;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-30px, -30px) rotate(180deg); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .interactive-simulator {
+                padding: 24px;
+                border-radius: 16px;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .interactive-controls {
+                flex-direction: column;
+            }
+
+            .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .feedback-content {
+                padding-left: 30px;
+                gap: 12px;
+            }
+
+            .feedback-section {
+                padding-bottom: 12px;
+            }
+
+            .feedback-label {
+                font-size: 0.85rem;
+            }
+
+            .feedback-text {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 10px;
+            }
+
+            .interactive-simulator {
+                padding: 16px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .feedback-content {
+                padding-left: 25px;
+                gap: 10px;
+            }
+
+            .feedback-section {
+                padding-bottom: 10px;
+            }
+
+            .game-feedback {
+                padding: 16px;
+            }
+
+            .game-feedback::before {
+                font-size: 1rem;
+                left: 16px;
+                top: 16px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="theme-icon"></i>
+    </div>
+
+    <div class="container">
+        <!-- RAG Overview Section -->
+        <div class="interactive-simulator">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-project-diagram"></i>
+                    <span class="gradient-text">RAG System Overview</span>
+                </h2>
+                <p class="section-description">
+                    Explore how Retrieval-Augmented Generation combines the power of search with AI generation. 
+                    Click through each component to understand how they work together to create intelligent, grounded responses.
+                </p>
+            </div>
+
+            <div class="glass-card">
+                <div class="section-visualization">
+                    <svg id="rag-overview-svg" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" aria-labelledby="rag-overview-title" role="img">
+                        <title id="rag-overview-title">Overview of the RAG process</title>
+                        <defs>
+                            <!-- Drop shadows for components -->
+                            <filter id="drop-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.2"></feDropShadow>
+                            </filter>
+
+                            <!-- Gradients -->
+                            <linearGradient id="primary-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--primary-start);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--primary-end);stop-opacity:1" />
+                            </linearGradient>
+
+                            <linearGradient id="secondary-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--secondary-start);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--secondary-end);stop-opacity:1" />
+                            </linearGradient>
+
+                            <linearGradient id="accent-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--accent-start);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--accent-end);stop-opacity:1" />
+                            </linearGradient>
+
+                            <!-- Arrow markers -->
+                            <marker id="arrowhead-query-in" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+                                <polygon points="0 0, 10 4, 0 8" fill="#FBBC05"></polygon>
+                            </marker>
+                            <marker id="arrowhead-response-out" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+                                <polygon points="0 0, 10 4, 0 8" fill="#E91E63"></polygon>
+                            </marker>
+                            <marker id="arrowhead-knowledge-in" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+                                <polygon points="0 0, 10 4, 0 8" fill="#4285F4"></polygon>
+                            </marker>
+                        </defs>
+
+                        <!-- Title -->
+                        <text x="250" y="30" class="component-label" font-size="16" font-weight="600" text-anchor="middle">
+                            Retrieval-Augmented Generation (RAG) Flow
+                        </text>
+
+                        <!-- Knowledge Source -->
+                        <g id="docs-group" class="highlighted-component" filter="url(#drop-shadow)">
+                            <rect class="component-box" x="20" y="60" width="80" height="120" fill="url(#primary-gradient)" fill-opacity="0.1" stroke="#4285F4" stroke-width="2" rx="8"></rect>
+
+                            <!-- Document stack icon -->
+                            <g transform="translate(35, 75)">
+                                <rect x="0" y="0" width="50" height="60" fill="white" fill-opacity="0.9" stroke="#4285F4" stroke-width="1.5" rx="4"></rect>
+                                <rect x="-4" y="-4" width="50" height="60" fill="white" fill-opacity="0.6" stroke="#4285F4" stroke-width="1.5" rx="4"></rect>
+                                <rect x="-8" y="-8" width="50" height="60" fill="white" fill-opacity="0.3" stroke="#4285F4" stroke-width="1.5" rx="4"></rect>
+                                <path d="M8 15h35 M8 25h35 M8 35h25 M8 45h30" stroke="#4285F4" stroke-width="2" opacity="0.7"></path>
+                            </g>
+
+                            <text class="component-label" x="60" y="162" text-anchor="middle" font-size="12" font-weight="600">Knowledge</text>
+                            <text class="component-label" x="60" y="177" text-anchor="middle" font-size="12" font-weight="600">Source</text>
+                        </g>
+
+                        <!-- RAG System -->
+                        <g id="rag-system-group" class="highlighted-component" filter="url(#drop-shadow)">
+                            <rect class="component-box" x="165" y="65" width="170" height="170" rx="10" fill="url(#accent-gradient)" fill-opacity="0.1" stroke="#34A853" stroke-width="2.5"></rect>
+
+                            <!-- Processing icon with retrieval+generation -->
+                            <g transform="translate(250, 120)">
+                                <!-- Central gear -->
+                                <circle r="36" fill="white" fill-opacity="0.9" stroke="#34A853" stroke-width="2"></circle>
+
+                                <!-- Gear teeth -->
+                                <path d="M0,-25 l3,-8 l4,0 l3,8 l8,-3 l2,3 l-3,8 l8,3 l0,4 l-8,3 l3,8 l-2,3 l-8,-3 l-3,8 l-4,0 l-3,-8 l-8,3 l-2,-3 l3,-8 l-8,-3 l0,-4 l8,-3 l-3,-8 l2,-3 Z" fill="#34A853" fill-opacity="0.8"></path>
+
+                                <!-- Central hub -->
+                                <circle r="15" fill="white" stroke="#34A853" stroke-width="2"></circle>
+                            </g>
+
+                            <text x="250" y="180" text-anchor="middle" font-size="28" fill="#34A853" font-weight="bold">RAG</text>
+                            <text class="component-label" x="250" y="205" text-anchor="middle" font-size="13">Retrieval +</text>
+                            <text class="component-label" x="250" y="223" text-anchor="middle" font-size="13">Generation</text>
+                        </g>
+
+                        <!-- Query -->
+                        <g id="query-group" class="highlighted-component highlighted" filter="url(#drop-shadow)">
+                            <rect class="component-box" x="30" y="210" width="113" height="50" rx="8" fill="#FBBC05" fill-opacity="0.1" stroke="#FBBC05" stroke-width="2"></rect>
+
+                            <!-- Speech bubble with question mark -->
+                            <g transform="translate(55, 235)">
+                                <path d="M-10,-10 h15 a7,7 0 0 1 7,7 v6 a7,7 0 0 1 -7,7 h-3 l-4,7 l-4,-7 h-4 a7,7 0 0 1 -7,-7 v-6 a7,7 0 0 1 7,-7 Z" fill="white" fill-opacity="0.9" stroke="#FBBC05" stroke-width="1.5"></path>
+                                <text x="0" y="3" text-anchor="middle" font-size="14" fill="#FBBC05" font-weight="bold">?</text>
+                            </g>
+
+                            <text class="component-label" x="102" y="237" text-anchor="middle" font-size="13" font-weight="600">User Query</text>
+
+                            <!-- Query arrow -->
+                            <path d="M143 235 Q 160 200, 165 160" stroke="#FBBC05" stroke-width="2.5" fill="none" marker-end="url(#arrowhead-query-in)" stroke-dasharray="5,3"></path>
+                        </g>
+
+                        <!-- Response -->
+                        <g id="response-group" class="highlighted-component" filter="url(#drop-shadow)">
+                            <rect class="component-box" x="380" y="125" width="100" height="50" rx="8" fill="#E91E63" fill-opacity="0.1" stroke="#E91E63" stroke-width="2"></rect>
+
+                            <!-- Document icon -->
+                            <g transform="translate(399, 150)">
+                                <rect x="-12" y="-15" width="24" height="30" fill="white" fill-opacity="0.9" stroke="#E91E63" stroke-width="1.5" rx="3"></rect>
+                                <path d="M-7,-8 h14 M-7,0 h14 M-7,8 h10" stroke="#E91E63" stroke-width="1.5"></path>
+                            </g>
+
+                            <text class="component-label" x="444" y="143" text-anchor="middle" font-size="13" font-weight="600">Final</text>
+                            <text class="component-label" x="444" y="158" text-anchor="middle" font-size="13" font-weight="600">Answer</text>
+
+                            <!-- Response arrow -->
+                            <path d="M335 150 Q 355 150, 380 150" stroke="#E91E63" stroke-width="2.5" fill="none" marker-end="url(#arrowhead-response-out)" stroke-dasharray="5,3"></path>
+                        </g>
+
+                        <!-- Knowledge Flow -->
+                        <g id="knowledge-flow-group" class="highlighted-component">
+                            <path id="knowledge-flow-path" d="M100 100 Q 135 110, 165 120" stroke="#4285F4" stroke-width="2.5" fill="none" marker-end="url(#arrowhead-knowledge-in)"></path>
+
+                            <!-- Text only -->
+                            <text id="retrieve-label" class="component-label" x="140" y="98" text-anchor="middle" font-size="11" font-weight="600" fill="#4285F4">Retrieve</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="visualization-caption">
+                    <strong>RAG High-Level Flow:</strong> The user asks a query, RAG retrieves relevant information
+                    from the knowledge source, and then generates an informed answer based on that information.
+                </div>
+
+                <div class="interactive-controls">
+                    <button class="btn-primary" id="cycle-rag-components-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        Cycle Components
+                    </button>
+                    <button class="btn-secondary" id="reset-rag-view">
+                        <i class="fas fa-redo"></i>
+                        Reset View
+                    </button>
+                </div>
+
+                <div id="component-info" class="game-feedback info">
+                    <div class="feedback-content">
+                        <div class="feedback-section">
+                            <div class="feedback-label">User Query</div>
+                            <div class="feedback-text">The question or request that starts the RAG process.</div>
+                        </div>
+                        <div class="feedback-section">
+                            <div class="feedback-label">Example</div>
+                            <div class="feedback-text">"What's our company's refund policy for international orders?"</div>
+                        </div>
+                        <div class="feedback-section">
+                            <div class="feedback-label">Building the Flow</div>
+                            <div class="feedback-text">Your query helps the system understand what information to search for.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        function initializeTheme() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // RAG Component Cycling
+        let currentComponentIndex = -1;
+        const ragComponents = [
+            {
+                id: "query-group",
+                title: "User Query",
+                description: "The question or request that starts the RAG process.",
+                example: "\"What's our company's refund policy for international orders?\"",
+                flow: "Your query helps the system understand what information to search for.",
+                highlightColor: "#FBBC05"
+            },
+            {
+                id: "docs-group",
+                title: "Knowledge Source",
+                description: "Where the AI finds information to answer questions - including your company documents, databases, and knowledge bases.",
+                example: "Your company's internal policy documents, training materials, and customer support resources.",
+                flow: "These knowledge sources contain the accurate information needed to answer your query.",
+                highlightColor: "#4285F4"
+            },
+            {
+                id: "knowledge-flow-group",
+                title: "Retrieval",
+                description: "Connects your question with relevant information by searching for and finding the most helpful content.",
+                example: "When asking about international refunds, the system retrieves sections from your policy documents about international orders and refund procedures.",
+                flow: "The retrieved information becomes the context for generating an accurate response.",
+                highlightColor: "#4285F4"
+            },
+            {
+                id: "rag-system-group",
+                title: "RAG System Core",
+                description: "The engine that combines retrieval with generation to create intelligent responses based on both the query and retrieved information.",
+                example: "It processes your refund policy question alongside the retrieved policy documents to prepare for generating a response.",
+                flow: "This system orchestrates the entire process from query to answer.",
+                highlightColor: "#34A853"
+            },
+            {
+                id: "response-group",
+                title: "Final Answer",
+                description: "The response generated based on both the AI's knowledge AND the specific retrieved information.",
+                example: "\"For international orders, our refund policy allows returns within 45 days of purchase. Customers must pay return shipping, but we refund the original shipping cost for defective items.\"",
+                flow: "Your question about international refunds → The system retrieves relevant policy documents → The RAG system processes this information → You receive a specific, accurate answer based on your company's actual policy.",
+                highlightColor: "#E91E63"
+            }
+        ];
+
+        function cycleRAGComponents() {
+            const svg = document.getElementById('rag-overview-svg');
+            const infoEl = document.getElementById('component-info');
+            if (!svg || !infoEl) return;
+
+            // Remove previous highlighting
+            if (currentComponentIndex !== -1) {
+                const prevComp = svg.querySelector(`#${ragComponents[currentComponentIndex].id}`);
+                if (prevComp) {
+                    prevComp.classList.remove('highlighted');
+                    // Reset stroke colors
+                    const box = prevComp.querySelector('.component-box');
+                    if (box) {
+                        box.style.strokeWidth = '2';
+                        box.style.filter = '';
+                    }
+                }
+            }
+
+            // Move to next component
+            currentComponentIndex = (currentComponentIndex + 1) % ragComponents.length;
+            const currentComp = svg.querySelector(`#${ragComponents[currentComponentIndex].id}`);
+            
+            if (currentComp) {
+                currentComp.classList.add('highlighted');
+                
+                // Apply highlight color
+                const box = currentComp.querySelector('.component-box');
+                if (box) {
+                    box.style.stroke = ragComponents[currentComponentIndex].highlightColor;
+                    box.style.strokeWidth = '3';
+                    box.style.filter = `drop-shadow(0px 0px 12px ${ragComponents[currentComponentIndex].highlightColor})`;
+                }
+                
+                // Special handling for knowledge flow
+                if (ragComponents[currentComponentIndex].id === 'knowledge-flow-group') {
+                    const path = currentComp.querySelector('#knowledge-flow-path');
+                    const label = currentComp.querySelector('#retrieve-label');
+                    if (path) {
+                        path.style.stroke = '#E91E63';
+                        path.style.filter = 'drop-shadow(0px 0px 8px #E91E63)';
+                    }
+                    if (label) {
+                        label.style.fill = '#E91E63';
+                        label.style.fontWeight = '700';
+                    }
+                }
+            }
+
+            showFeedbackStructured('component-info', ragComponents[currentComponentIndex], 'info');
+        }
+
+        function resetRAGView() {
+            const svg = document.getElementById('rag-overview-svg');
+            if (!svg) return;
+
+            // Remove all highlighting
+            ragComponents.forEach(comp => {
+                const element = svg.querySelector(`#${comp.id}`);
+                if (element) {
+                    element.classList.remove('highlighted');
+                    const box = element.querySelector('.component-box');
+                    if (box) {
+                        box.style.stroke = '';
+                        box.style.strokeWidth = '';
+                        box.style.filter = '';
+                    }
+                }
+            });
+
+            // Reset knowledge flow
+            const path = svg.querySelector('#knowledge-flow-path');
+            const label = svg.querySelector('#retrieve-label');
+            if (path) {
+                path.style.stroke = '';
+                path.style.filter = '';
+            }
+            if (label) {
+                label.style.fill = '';
+                label.style.fontWeight = '';
+            }
+
+            currentComponentIndex = -1;
+            
+            // Reset to initial message
+            showFeedbackStructured('component-info', ragComponents[0], 'info');
+        }
+
+        // Utility Functions
+        function showFeedback(elementId, message, type) {
+            const feedbackEl = document.getElementById(elementId);
+            if (!feedbackEl) return;
+            
+            feedbackEl.innerHTML = message;
+            feedbackEl.className = `game-feedback ${type}`;
+            
+            // Add animation
+            feedbackEl.style.animation = 'none';
+            feedbackEl.offsetHeight; // Trigger reflow
+            feedbackEl.style.animation = 'pulse 0.5s ease';
+        }
+
+        function showFeedbackStructured(elementId, component, type) {
+            const feedbackEl = document.getElementById(elementId);
+            if (!feedbackEl) return;
+            
+            const flowLabel = component.id === 'response-group' ? 'The Complete Flow' : 'Building the Flow';
+            
+            feedbackEl.innerHTML = `
+                <div class="feedback-content">
+                    <div class="feedback-section">
+                        <div class="feedback-label">${component.title}</div>
+                        <div class="feedback-text">${component.description}</div>
+                    </div>
+                    <div class="feedback-section">
+                        <div class="feedback-label">Example</div>
+                        <div class="feedback-text">${component.example}</div>
+                    </div>
+                    <div class="feedback-section">
+                        <div class="feedback-label">${flowLabel}</div>
+                        <div class="feedback-text">${component.flow}</div>
+                    </div>
+                </div>
+            `;
+            
+            feedbackEl.className = `game-feedback ${type}`;
+            
+            // Add animation
+            feedbackEl.style.animation = 'none';
+            feedbackEl.offsetHeight; // Trigger reflow
+            feedbackEl.style.animation = 'pulse 0.5s ease';
+        }
+
+        // Event Listeners
+        document.getElementById('cycle-rag-components-btn')?.addEventListener('click', cycleRAGComponents);
+        document.getElementById('reset-rag-view')?.addEventListener('click', resetRAGView);
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
+            
+            // Show the first component information without highlighting
+            if (ragComponents.length > 0) {
+                showFeedbackStructured('component-info', ragComponents[0], 'info');
+            }
+        });
+    </script>
+</body>
+</html>
